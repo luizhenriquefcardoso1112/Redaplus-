@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reda+ v6</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f7faff;color:#153763}
+button,input,textarea{font:inherit}
+.top{background:linear-gradient(135deg,#123565,#1769e8);color:white;padding:20px 22px;position:sticky;top:0;z-index:5}
+.logo{font-size:36px;font-weight:800}.logo span{color:#32a8ff}.tag{opacity:.9}
+.wrap{max-width:1050px;margin:auto;padding:25px 18px 105px}
+.page{display:none}.page.on{display:block}
+h1{font-size:30px;margin:5px 0}.sub{color:#62779a;line-height:1.5}
+.card{background:white;border:1px solid #dce8f8;border-radius:22px;padding:20px;margin:16px 0}
+.actions,.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.action{border:1px solid #dce8f8;border-radius:20px;padding:20px;text-align:left;background:white;min-height:160px}
+.blue{background:#e2efff}.purple{background:#eee7ff}.green{background:#dff8ef}
+.icon{font-size:28px}.primary{background:#1769e8;color:white;border:0;border-radius:13px;padding:13px 18px;font-weight:bold}
+.secondary{background:white;border:1px solid #dce8f8;border-radius:13px;padding:12px 17px;font-weight:bold}
+.back{border:0;background:none;color:#1769e8;font-size:30px;padding:0}
+.chips{display:flex;gap:8px;overflow:auto;padding-bottom:6px;flex-wrap:wrap}
+.chip{border:0;border-radius:30px;padding:10px 15px;background:#eef4fb;white-space:nowrap}.chip.active{background:#1769e8;color:white}
+.topic{width:100%;display:flex;align-items:center;gap:15px;text-align:left;background:white;border:1px solid #dce8f8;border-radius:17px;padding:16px;margin:10px 0}
+.topic h3{margin:0 0 5px}.topic p{margin:0;color:#62779a}.arrow{margin-left:auto;font-size:24px}
+.info{background:#edf6ff}.editor textarea{width:100%;min-height:430px;border:0;outline:0;resize:vertical;font:17px/1.7 Georgia,serif}
+.field{width:100%;padding:14px;border:1px solid #cbdcf0;border-radius:13px;outline:none;color:#173763;background:#fff}
+.field:focus{border-color:#1769e8}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #dce8f8;z-index:6}
+.nav{max-width:700px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.nav button{border:0;background:none;padding:12px 3px;color:#617595}.nav button b{display:block;font-size:21px}.nav button.on{color:#1769e8;font-weight:bold}
+.score{font-size:42px;font-weight:800;color:#1769e8}.competency{padding:14px;border:1px solid #e2ebf7;border-radius:16px;margin:9px 0}.bar{height:7px;background:#e2ebf7;border-radius:99px;margin-top:8px}.bar i{display:block;height:100%;background:#1769e8;border-radius:99px}
+.positive{background:#e9fbf4}.improve{background:#fff0f2}
+.photoBox{border:2px dashed #a9c7e9;border-radius:20px;padding:28px;text-align:center;background:#f8fbff}
+.photoPreview{max-width:100%;max-height:420px;border-radius:15px;margin:15px auto;display:none}
+.badge{display:inline-block;background:#e9f3ff;color:#1769e8;border-radius:30px;padding:7px 11px;font-weight:bold}
+@media(max-width:700px){.actions,.grid{grid-template-columns:1fr}}
+
+.study-intro{background:linear-gradient(135deg,#edf5ff,#fff);border:1px solid #dce8f8;border-radius:22px;padding:20px;margin:16px 0}
+.study-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.study-chip{border:1px solid #dce8f8;background:white;border-radius:15px;padding:13px;text-align:left;font-weight:700;color:#153763;cursor:pointer}.study-chip small{display:block;color:#6a7d9c;font-weight:400;margin-top:4px}.study-chip.active{border-color:#1769e8;background:#eaf3ff}
+.study-panel{background:white;border:1px solid #dce8f8;border-radius:22px;padding:21px;margin-top:16px}.study-panel h2{margin:4px 0 8px}.study-panel h3{margin:22px 0 9px}.study-panel p{line-height:1.55;color:#62779a}.study-list{line-height:1.65;color:#536b8d;padding-left:22px}.study-meta,.study-examples{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.study-box,.example{background:#f5f8fc;border-radius:15px;padding:14px;line-height:1.55}.example p{margin:9px 0 0;color:#536b8d}.study-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.challenge{background:#edf5ff;border-radius:17px;padding:16px;margin-top:20px}.challenge-result{font-weight:bold;margin-top:10px}
+@media(max-width:700px){.study-grid,.study-meta,.study-examples{grid-template-columns:1fr}}
+
+/* ===== Reda+ v5: autenticação e perfil ===== */
+.auth-overlay{position:fixed;inset:0;background:linear-gradient(160deg,#0b5bd3,#2563eb);z-index:100;display:flex;align-items:center;justify-content:center;padding:18px}
+.auth-card{width:min(460px,100%);background:#fff;border-radius:28px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.22)}
+.auth-logo{font-size:32px;font-weight:900;color:#1259c3;margin-bottom:6px}
+.auth-sub{color:#667085;margin:0 0 22px;line-height:1.45}
+.auth-tabs{display:flex;background:#f2f4f7;border-radius:12px;padding:4px;margin-bottom:20px}
+.auth-tab{flex:1;border:0;background:transparent;padding:11px;border-radius:9px;font-weight:800;color:#667085;cursor:pointer}
+.auth-tab.active{background:#fff;color:#1259c3;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.auth-form label{display:block;font-weight:700;font-size:14px;margin:13px 0 7px;color:#344054}
+.auth-form input{width:100%;box-sizing:border-box;padding:13px 14px;border:1px solid #d0d5dd;border-radius:12px;font-size:16px;outline:none}
+.auth-form input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.auth-btn{width:100%;border:0;border-radius:13px;padding:14px;margin-top:18px;background:#1259c3;color:white;font-size:16px;font-weight:800;cursor:pointer}
+.auth-secondary{width:100%;border:1px solid #d0d5dd;border-radius:13px;padding:13px;margin-top:10px;background:#fff;color:#344054;font-weight:800;cursor:pointer}
+.auth-divider{display:flex;align-items:center;gap:10px;color:#98a2b3;font-size:13px;margin:18px 0}
+.auth-divider:before,.auth-divider:after{content:"";height:1px;background:#eaecf0;flex:1}
+.auth-error{background:#fef3f2;color:#b42318;border-radius:10px;padding:10px 12px;font-size:14px;margin-top:12px;display:none}
+.profile-page{padding-bottom:110px}
+.profile-hero{background:linear-gradient(135deg,#1259c3,#3b82f6);color:#fff;border-radius:22px;padding:24px;margin-bottom:18px}
+.profile-avatar{width:70px;height:70px;border-radius:50%;background:#fff;color:#1259c3;display:flex;align-items:center;justify-content:center;font-size:27px;font-weight:900;margin-bottom:14px}
+.profile-hero h2{margin:0 0 4px}.profile-hero p{margin:0;opacity:.9}
+.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:15px 0}
+.profile-stat{background:#fff;border:1px solid #eaecf0;border-radius:16px;padding:16px}
+.profile-stat strong{display:block;font-size:24px;color:#1259c3}.profile-stat span{font-size:13px;color:#667085}
+.profile-menu{display:flex;flex-direction:column;gap:10px}
+.profile-menu button{border:1px solid #eaecf0;background:#fff;border-radius:15px;padding:15px;text-align:left;font-weight:750;color:#344054;cursor:pointer}
+.profile-menu button.danger{color:#b42318}
+.profile-section-title{font-size:18px;margin:22px 0 10px}
+@media(max-width:480px){.auth-card{padding:22px;border-radius:24px}.profile-grid{grid-template-columns:1fr 1fr}}
+
+</style>
+<meta name="theme-color" content="#1259c3">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<style>
+.install-banner{position:fixed;left:14px;right:14px;bottom:78px;z-index:80;background:#fff;border:1px solid #dbe3f0;border-radius:18px;padding:14px 16px;box-shadow:0 12px 35px rgba(0,0,0,.16);display:none;align-items:center;gap:12px}.install-banner .ib-text{flex:1}.install-banner strong{display:block;color:#1259c3}.install-banner small{color:#667085}.install-banner button{border:0;border-radius:11px;padding:10px 13px;font-weight:800;cursor:pointer}.install-btn{background:#1259c3;color:#fff}.close-install{background:#f2f4f7;color:#344054}
+.plan-card{background:#fff;border:1px solid #e4e7ec;border-radius:20px;padding:18px;margin:16px 0}.plan-card.plus{background:#fff7df;border-color:#f2cf65}.plan-badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef4ff;color:#1259c3;font-size:12px;font-weight:900}.plan-badge.plus{background:#fff0b8;color:#7a5600}.usage-row{display:flex;justify-content:space-between;margin:12px 0 6px;font-size:14px;font-weight:750}.usage-bar{height:9px;background:#eaecf0;border-radius:999px;overflow:hidden}.usage-fill{height:100%;background:#1259c3;border-radius:999px;width:0}.plus-btn{width:100%;border:0;border-radius:13px;padding:13px;background:#1259c3;color:#fff;font-weight:850;cursor:pointer;margin-top:12px}.plan-note{font-size:12px;color:#667085;line-height:1.4;margin-top:9px}.limit-modal{position:fixed;inset:0;background:rgba(16,24,40,.55);z-index:120;display:none;align-items:center;justify-content:center;padding:18px}.limit-box{background:#fff;width:min(420px,100%);border-radius:24px;padding:25px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.limit-box h3{margin-top:0;color:#1259c3}.limit-box p{color:#667085;line-height:1.5}.limit-box button{width:100%;border:0;border-radius:12px;padding:13px;margin-top:9px;font-weight:800;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="installBanner" class="install-banner"><div class="ib-text"><strong>📱 Instale o Reda+</strong><small>Adicione o app à tela inicial.</small></div><button class="install-btn" onclick="installPWA()">Instalar</button><button class="close-install" onclick="closeInstallBanner()">Agora não</button></div>
+<div id="limitModal" class="limit-modal"><div class="limit-box"><h3>🔒 Limite diário atingido</h3><p id="limitMessage"></p><button style="background:#1259c3;color:#fff" onclick="activatePlusDemo()">💎 Ativar Plus (demonstração)</button><button style="background:#f2f4f7;color:#344054" onclick="closeLimitModal()">Voltar</button></div></div>
+
+<div id="authOverlay" class="auth-overlay">
+  <div class="auth-card">
+    <div class="auth-logo">Reda+</div>
+    <p class="auth-sub">Crie sua conta para salvar redações, acompanhar seu progresso e continuar seus estudos de onde parou.</p>
+    <div class="auth-tabs">
+      <button id="tabLogin" class="auth-tab active" onclick="showAuth('login')">Entrar</button>
+      <button id="tabSignup" class="auth-tab" onclick="showAuth('signup')">Criar conta</button>
+    </div>
+
+    <form id="loginForm" class="auth-form" onsubmit="loginUser(event)">
+      <label for="loginEmail">E-mail</label>
+      <input id="loginEmail" type="email" autocomplete="email" required placeholder="seuemail@exemplo.com">
+      <label for="loginPassword">Senha</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Sua senha">
+      <div id="loginError" class="auth-error"></div>
+      <button class="auth-btn" type="submit">Entrar no Reda+</button>
+      <div class="auth-divider">ou</div>
+      <button class="auth-secondary" type="button" onclick="demoGoogle()">🔵 Continuar com Google (demonstração)</button>
+    </form>
+
+    <form id="signupForm" class="auth-form" style="display:none" onsubmit="signupUser(event)">
+      <label for="signupName">Nome</label>
+      <input id="signupName" type="text" autocomplete="name" required placeholder="Como você quer ser chamado?">
+      <label for="signupEmail">E-mail</label>
+      <input id="signupEmail" type="email" autocomplete="email" required placeholder="seuemail@exemplo.com">
+      <label for="signupPassword">Senha</label>
+      <input id="signupPassword" type="password" autocomplete="new-password" minlength="6" required placeholder="Mínimo de 6 caracteres">
+      <label for="signupConfirm">Confirmar senha</label>
+      <input id="signupConfirm" type="password" autocomplete="new-password" minlength="6" required placeholder="Digite a senha novamente">
+      <div id="signupError" class="auth-error"></div>
+      <button class="auth-btn" type="submit">Criar minha conta</button>
+      <div class="auth-divider">ou</div>
+      <button class="auth-secondary" type="button" onclick="demoGoogle()">🔵 Continuar com Google (demonstração)</button>
+    </form>
+  </div>
+</div>
+
+<header class="top"><div class="logo">Reda<span>+</span></div><div class="tag">Sua evolução na redação começa aqui.</div></header>
+<main class="wrap">
+
+<section id="inicio" class="page on">
+<h1>Olá! 👋</h1><p class="sub">Continue firme no seu objetivo.<br>Cada texto te deixa mais perto de evoluir!</p>
+<div class="card"><h2>🎯 Preparação para o ENEM e produção textual</h2><p class="sub">Escolha um gênero, pratique temas ou escreva sobre um tema próprio.</p></div>
+<div class="actions">
+<button class="action blue" onclick="go('escrever')"><div class="icon">✍️</div><h3>Escrever</h3><p>Escolha gênero e tema ou crie seu próprio tema.</p></button>
+<button class="action purple" onclick="go('aprender')"><div class="icon">📚</div><h3>Aprender</h3><p>Conheça gêneros, estruturas e competências.</p></button>
+<button class="action green" onclick="go('foto')"><div class="icon">📷</div><h3>Analisar uma foto</h3><p>Fotografe uma redação e peça uma análise.</p></button>
+</div>
+<div class="card"><h2>📊 Seu progresso</h2><p>Última nota: <b>720</b> · Média: <b>744</b> · 5 redações realizadas</p><button class="secondary" onclick="go('progresso')">Ver progresso</button></div>
+</section>
+
+<section id="escrever" class="page">
+<button class="back" onclick="go('inicio')">‹</button><h1>Escrever</h1>
+<p class="sub">Escolha o gênero textual. Depois, escolha um tema ou informe um tema próprio.</p>
+<div class="card"><h2>1. Escolha o gênero textual</h2><div id="genres" class="chips"></div></div>
+<div id="genreInfo" class="card info"></div>
+<div class="card"><h2>2. Escolha o tema</h2>
+<div id="topics"></div>
+<button class="topic" onclick="customTopic()"><span class="icon">➕</span><span><h3>Meu próprio tema</h3><p>Digite o tema que você quer escrever.</p></span><span class="arrow">›</span></button>
+</div>
+<div class="card"><h2>3. Rascunho</h2><p class="sub">Você também pode escolher somente o gênero e informar o tema depois, antes de escrever.</p>
+<button class="secondary" onclick="draftMode()">📝 Começar rascunho</button></div>
+</section>
+
+<section id="draft" class="page">
+<button class="back" onclick="go('escrever')">‹</button><h1>Rascunho</h1>
+<p class="sub">O gênero já está definido. Agora diga ao Reda+ qual tema você pretende desenvolver.</p>
+<div class="card"><span class="badge" id="draftGenre"></span><h2>Qual é o seu tema?</h2>
+<input id="draftTopic" class="field" placeholder="Ex.: O impacto das redes sociais na educação">
+<p class="sub">O tema pode ser diferente dos temas sugeridos pelo aplicativo.</p>
+<button class="primary" onclick="startDraft()">Continuar para o editor</button></div>
+</section>
+
+<section id="editor" class="page">
+<button class="back" onclick="go('escrever')">‹</button><h1>Editor</h1><p class="sub" id="selected"></p>
+<div class="card info"><b>Orientação do gênero</b><p id="editorHint" class="sub"></p></div>
+<div class="card editor"><textarea id="text" placeholder="Comece seu texto aqui..."></textarea><p id="count">0 palavras</p>
+<button class="secondary" onclick="save()">Salvar rascunho</button>
+<button class="primary" onclick="send()">Enviar para correção</button></div>
+</section>
+
+<section id="resultado" class="page">
+<button class="back" onclick="go('editor')">‹</button><h1>Resultado da redação</h1><p class="sub">Análise demonstrativa adaptada ao gênero escolhido.</p>
+<div class="card"><h2>Sua nota estimada</h2><div class="score">720 <span style="font-size:18px;color:#62779a">/1000</span></div><p>Bom desempenho! O texto apresenta uma boa estrutura e ainda tem pontos que podem ser aprimorados.</p></div>
+<div class="card"><h2>📊 As 5 competências do ENEM</h2>
+<div class="competency"><b>C1 · Norma-padrão</b> — 160/200<div class="bar"><i style="width:80%"></i></div></div>
+<div class="competency"><b>C2 · Compreensão do tema</b> — 140/200<div class="bar"><i style="width:70%"></i></div></div>
+<div class="competency"><b>C3 · Argumentação</b> — 120/200<div class="bar"><i style="width:60%"></i></div></div>
+<div class="competency"><b>C4 · Coesão</b> — 160/200<div class="bar"><i style="width:80%"></i></div></div>
+<div class="competency"><b>C5 · Proposta de intervenção</b> — 140/200<div class="bar"><i style="width:70%"></i></div></div></div>
+<div class="grid"><div class="card positive"><h2>👍 Pontos positivos</h2><p>✓ Boa organização das ideias.</p><p>✓ Uso adequado de conectivos.</p><p>✓ Vocabulário adequado.</p></div><div class="card improve"><h2>⚠️ O que melhorar</h2><p>• Desenvolver melhor os argumentos.</p><p>• Evitar repetições.</p><p>• Revisar ortografia e pontuação.</p><p>• Detalhar melhor as ideias.</p></div></div>
+<button class="primary" onclick="go('escrever')">🔄 Tentar novamente</button>
+</section>
+
+<section id="foto" class="page">
+<button class="back" onclick="go('inicio')">‹</button><h1>📷 Analisar uma redação</h1>
+<p class="sub">Tire uma foto da sua redação ou escolha uma imagem do celular. O próximo passo do Reda+ será ler o texto e gerar uma análise.</p>
+<div class="card photoBox">
+<h2>Envie sua redação</h2>
+<p class="sub">No celular, você pode usar a câmera diretamente.</p>
+<input id="photoInput" type="file" accept="image/*" capture="environment" class="field" onchange="previewPhoto(event)">
+<img id="photoPreview" class="photoPreview" alt="Pré-visualização da redação">
+<p id="photoName" class="sub"></p>
+<button id="analyzeBtn" class="primary" style="display:none" onclick="analyzePhoto()">🔎 Analisar redação</button>
+</div>
+<div id="photoResult" class="card" style="display:none"><h2>🧠 Análise</h2><p>Imagem recebida! Nesta versão do protótipo, a foto é carregada e visualizada. A integração de OCR + IA será o próximo módulo para ler automaticamente o texto manuscrito e gerar nota, pontos positivos e melhorias.</p><span class="badge">Próximo módulo: OCR + correção por IA</span></div>
+</section>
+
+<section id="aprender" class="page">
+<h1>📚 Aprender</h1><p class="sub">Estude um gênero, entenda suas características e depois pratique.</p>
+<div class="study-intro"><h2>Como estudar no Reda+</h2><p>Escolha um gênero abaixo para ver a definição, 6 características principais, estrutura, 2 exemplos e erros comuns.</p></div>
+<div id="studyGenres" class="study-grid"></div>
+<div id="studyContent"></div>
+</section>
+<section id="treinar" class="page"><h1>Treinar</h1><p class="sub">Pratique suas habilidades.</p><div class="grid"><div class="card"><h2>📝 Temas</h2><button class="primary" onclick="go('escrever')">Treinar</button></div><div class="card"><h2>🧠 Repertório</h2><p class="sub">Organize referências.</p></div><div class="card"><h2>🏆 Desafios</h2><p class="sub">Missões de prática.</p></div></div></section>
+<section id="progresso" class="page"><h1>Seu progresso</h1><p class="sub">Acompanhe sua evolução.</p><div class="card"><div class="score">744</div><p>Média geral · 5 redações · Melhor nota 820</p></div><div class="card"><h2>Histórico</h2><p>Sustentabilidade — <b>820</b></p><p>Tecnologia — <b>760</b></p><p>Educação — <b>700</b></p></div></section>
+<section id="mais" class="page"><h1>Mais</h1><p class="sub">Seu espaço pessoal.</p><div class="card"><h2>👤 Meu perfil</h2><p>Configurações e preferências.</p></div></section>
+</main>
+
+<nav class="bottom"><div class="nav">
+<button data-p="inicio" onclick="go('inicio')"><b>⌂</b>Início</button>
+<button data-p="aprender" onclick="go('aprender')"><b>▣</b>Aprender</button>
+<button data-p="treinar" onclick="go('treinar')"><b>◎</b>Treinar</button>
+<button data-p="progresso" onclick="go('progresso')"><b>↗</b>Progresso</button>
+<button data-p="mais" onclick="go('mais')"><b>⚙</b>Mais</button>
+</div></nav>
+
+<script>
+
+const modelExamples={"Artigo de opinião": [["A escola também ensina fora da sala", "A leitura não deveria ser vista apenas como uma tarefa escolar. Quando os estudantes têm contato frequente com livros, desenvolvem vocabulário, interpretação e autonomia para compreender diferentes assuntos. Por isso, incentivar a leitura na escola é uma forma de ampliar oportunidades de aprendizagem e participação social."], ["Tecnologia com equilíbrio", "A tecnologia pode facilitar muito a aprendizagem, mas seu uso precisa ter equilíbrio. Celulares e computadores oferecem acesso a informações e ferramentas educativas, porém não substituem a concentração, a conversa e a orientação dos professores. Assim, a escola deve ensinar os alunos a usar a tecnologia de maneira consciente e responsável."]], "Editorial": [["Educação midiática é necessária", "A circulação de informações pela internet tornou mais importante a capacidade de verificar fontes e reconhecer conteúdos enganosos. Para este veículo, a educação midiática deve fazer parte da formação escolar, pois compreender como a informação é produzida ajuda os cidadãos a tomar decisões com mais responsabilidade."], ["Cidades precisam priorizar o transporte coletivo", "O crescimento das cidades exige políticas que tornem o transporte coletivo mais acessível e eficiente. Investimentos em ônibus, integração e segurança podem melhorar a mobilidade e reduzir problemas causados pelo excesso de carros. É necessário tratar a mobilidade urbana como uma questão de qualidade de vida."]], "Manifesto": [["Manifesto por uma escola mais inclusiva", "Nós, estudantes, professores e comunidade escolar, defendemos uma escola em que todos tenham condições de aprender e participar. Queremos espaços acessíveis, respeito às diferenças e combate a toda forma de exclusão. Convidamos a comunidade a construir, junto conosco, uma escola em que ninguém seja deixado para trás."], ["Manifesto pela preservação do meio ambiente", "Defendemos atitudes concretas para cuidar do ambiente em que vivemos. Reduzir desperdícios, preservar áreas verdes e promover educação ambiental são responsabilidades coletivas. Convidamos escolas, famílias e instituições a transformar preocupação em ação e a proteger os recursos naturais para as próximas gerações."]], "Resumo": [["Resumo sobre leitura", "O texto destaca a importância da leitura para o desenvolvimento dos estudantes. Segundo a ideia central apresentada, ler com frequência amplia o vocabulário, fortalece a interpretação e contribui para a autonomia. Por isso, a escola tem papel importante na formação de leitores."], ["Resumo sobre tecnologia", "O texto aborda o uso da tecnologia na educação e destaca seus benefícios e limites. Recursos digitais podem ampliar o acesso a informações e facilitar atividades, mas precisam ser utilizados com orientação e equilíbrio para contribuir efetivamente com a aprendizagem."]], "Resenha crítica": [["Resenha de uma obra sobre tecnologia", "O filme apresenta uma estudante que passa a depender cada vez mais das ferramentas digitais para organizar sua rotina. A história aborda de maneira acessível os benefícios e os riscos dessa dependência. O destaque da obra está na forma como transforma um problema cotidiano em reflexão sobre escolhas e equilíbrio. É uma produção indicada para quem deseja discutir tecnologia de maneira próxima da realidade dos jovens."], ["Resenha de um livro juvenil", "O livro acompanha um adolescente que precisa lidar com mudanças inesperadas na escola e na família. A narrativa utiliza linguagem simples e personagens fáceis de acompanhar. Seu principal mérito é tratar de inseguranças comuns sem transformar os conflitos em respostas prontas. A obra consegue combinar entretenimento e reflexão e pode interessar especialmente ao público juvenil."]], "Crônica": [["A fila da cantina", "A fila da cantina começava antes mesmo do sinal tocar. Cada aluno defendia seu lugar como se estivesse disputando uma final de campeonato. Quando finalmente chegou minha vez, a funcionária perguntou: “Vai querer o quê?”. Depois de quinze minutos de espera, percebi que eu ainda não tinha decidido. A fila inteira suspirou ao mesmo tempo."], ["Um dia sem celular", "Naquela manhã, o celular ficou em casa. No começo, achei que seria impossível sobreviver à escola sem conferir as mensagens no intervalo. Então conversei com um colega, observei o pátio e descobri que havia uma árvore enorme perto da quadra que eu nunca tinha percebido. Talvez o problema não fosse a falta do celular, mas o excesso de atenção que eu dava a ele."]], "Fábula": [["O coelho e a ponte", "Um coelho atravessava uma ponte estreita quando encontrou uma tartaruga vindo do outro lado. O coelho quis passar correndo, mas escorregou. A tartaruga esperou, ajudou o coelho a se levantar e os dois atravessaram juntos.\n\nMoral: a cooperação pode resolver problemas que a pressa aumenta."], ["A formiga e a folha", "Uma formiga encontrou uma grande folha e tentou carregá-la sozinha. Depois de várias tentativas, chamou outras formigas, e juntas levaram a folha até o abrigo.\n\nMoral: trabalhar em conjunto torna tarefas difíceis mais possíveis."]], "Biografia": [["Biografia de uma cientista", "Marina Alves nasceu em uma pequena cidade brasileira e desde cedo demonstrou interesse por experiências científicas. Durante a universidade, dedicou-se ao estudo de materiais sustentáveis e participou de projetos de pesquisa. Ao longo da carreira, publicou trabalhos e colaborou com estudantes interessados em ciência. Sua trajetória ficou marcada pela combinação entre pesquisa e preocupação com problemas ambientais."], ["Biografia de um artista", "João Martins começou a desenhar ainda criança e passou a estudar diferentes técnicas durante a adolescência. Mais tarde, participou de exposições e desenvolveu um estilo próprio, inspirado em cenas do cotidiano. Seu trabalho ganhou espaço em eventos culturais e também em projetos educativos. Além de produzir arte, passou a oferecer oficinas para jovens interessados em desenho."]], "Notícia": [["Estudantes realizam feira de ciências", "Alunos de uma escola municipal realizaram, nesta sexta-feira, uma feira de ciências aberta à comunidade. O evento apresentou projetos sobre reciclagem, energia e qualidade da água. Segundo a organização, cerca de 200 pessoas visitaram os trabalhos durante o dia."], ["Escola promove campanha de arrecadação", "Uma escola do bairro iniciou, nesta segunda-feira, uma campanha para arrecadar livros destinados à biblioteca comunitária. A iniciativa seguirá até o fim do mês e aceita obras em bom estado. De acordo com a direção, os materiais serão organizados e disponibilizados gratuitamente para moradores da região."]], "Reportagem": [["Jovens e o uso das redes sociais", "As redes sociais fazem parte da rotina de muitos jovens e influenciam a maneira como eles se comunicam, estudam e acompanham notícias. Professores e especialistas em educação destacam que as plataformas podem ser úteis para pesquisas e interação, mas recomendam atenção à qualidade das informações e ao tempo de uso."], ["Como as cidades podem melhorar a mobilidade", "O deslocamento diário é um dos principais desafios das grandes cidades. Além do número de veículos, fatores como distância, qualidade do transporte público e segurança influenciam o tempo gasto pela população. Projetos de integração entre ônibus, bicicletas e caminhos para pedestres podem oferecer alternativas."]], "Carta de reclamação": [["Problemas na biblioteca escolar", "À Direção da Escola,\n\nEscrevo para registrar uma reclamação sobre o horário de funcionamento da biblioteca. Em vários dias, o espaço permanece fechado durante o intervalo, justamente quando muitos estudantes poderiam utilizá-lo. Solicito que a escola avalie a possibilidade de manter a biblioteca aberta nesse período.\n\nAtenciosamente,\nUm estudante da escola."], ["Problemas no transporte coletivo", "À empresa responsável pelo transporte,\n\nGostaria de registrar uma reclamação sobre os atrasos frequentes da linha utilizada pelos moradores do bairro. Em diversos dias, o intervalo entre os veículos tem sido longo, causando atrasos para estudantes e trabalhadores. Solicito que a empresa verifique a regularidade da linha.\n\nAtenciosamente,\nUm usuário do transporte."]]};
+const studyData={"Artigo de opinião": ["Texto argumentativo em que o autor apresenta uma opinião sobre um tema relevante e usa argumentos para defendê-la.", "Defender um ponto de vista e levar o leitor à reflexão ou à persuasão.", "Jornais, revistas, sites, blogs e espaços de opinião.", ["Apresenta uma tese ou opinião clara.", "Desenvolve argumentos que sustentam a tese.", "Aborda um tema relevante ou debatido.", "Organiza as ideias de forma lógica.", "Usa linguagem adequada ao público e ao contexto.", "Busca persuadir ou provocar reflexão no leitor."], ["Introdução: apresenta o tema e a tese.", "Desenvolvimento: apresenta argumentos, exemplos e explicações.", "Conclusão: retoma a ideia principal e pode propor reflexão ou encaminhamento."], ["Os impactos das redes sociais na educação.", "Por que a leitura deve ser incentivada nas escolas?"], ["Ficar apenas na opinião, sem argumentos.", "Fugir do tema.", "Repetir a mesma ideia sem desenvolvê-la."]], "Editorial": ["Texto argumentativo que apresenta a posição institucional de um jornal, revista ou veículo de comunicação sobre um assunto relevante.", "Expressar a opinião do veículo e analisar um tema de interesse público.", "Jornais, revistas e portais de notícias.", ["Representa a posição do veículo, não de um autor individual.", "Trata de assunto relevante para a sociedade.", "Apresenta tese ou posicionamento.", "Usa argumentos e informações para sustentar a posição.", "Mantém linguagem formal e organizada.", "Pode buscar orientar a interpretação do leitor sobre o tema."], ["Apresentação do tema e contexto.", "Exposição da posição do veículo.", "Desenvolvimento dos argumentos.", "Conclusão com síntese do posicionamento."], ["Editorial sobre os desafios da educação pública.", "Editorial sobre medidas para reduzir a poluição urbana."], ["Confundir editorial com notícia.", "Apresentar opinião pessoal sem caráter institucional.", "Usar linguagem excessivamente informal."]], "Manifesto": ["Texto público em que um grupo ou indivíduo apresenta ideias, reivindicações, princípios ou propostas e busca mobilizar outras pessoas.", "Defender uma causa, denunciar um problema ou convocar para uma ação.", "Movimentos sociais, escolas, organizações, campanhas e espaços públicos.", ["Defende uma causa ou princípio.", "Expõe problemas ou situações que motivam o texto.", "Apresenta posicionamento coletivo ou individual.", "Pode usar linguagem apelativa e persuasiva.", "Pode convocar o público para uma ação.", "Costuma ter tom firme e engajado."], ["Título e apresentação da causa.", "Contextualização do problema.", "Princípios, reivindicações ou propostas.", "Convocação ou encerramento mobilizador."], ["Manifesto por uma escola mais inclusiva.", "Manifesto em defesa do meio ambiente."], ["Não deixar clara a causa defendida.", "Transformar o texto em simples desabafo.", "Fazer acusações sem desenvolver a argumentação."]], "Resumo": ["Texto conciso que apresenta as ideias essenciais de outro texto, sem alterar seu sentido principal.", "Transmitir de forma breve o conteúdo fundamental de um texto ou material.", "Estudos, trabalhos escolares, livros, artigos e situações acadêmicas.", ["É mais curto que o texto original.", "Mantém as ideias essenciais.", "Evita informações secundárias desnecessárias.", "Preserva o sentido original.", "Usa linguagem clara e objetiva.", "Normalmente não inclui opiniões pessoais."], ["Identificação do tema ou assunto central.", "Apresentação das ideias principais.", "Síntese final, mantendo a unidade do conteúdo."], ["Resumo de um capítulo de um livro didático.", "Resumo de um artigo sobre mudanças climáticas."], ["Copiar trechos longos do original.", "Adicionar opinião pessoal.", "Omitir a ideia central."]], "Resenha crítica": ["Texto que apresenta e sintetiza uma obra e, ao mesmo tempo, desenvolve uma avaliação crítica sobre ela.", "Informar o leitor sobre a obra e ajudá-lo a compreendê-la e avaliá-la.", "Jornais, revistas, sites, blogs, escolas e universidades.", ["Identifica a obra e seu autor.", "Apresenta informações sobre o conteúdo.", "Resume aspectos importantes sem contar tudo.", "Avalia a obra de forma argumentada.", "Pode destacar pontos positivos e limitações.", "Considera o público e o contexto da obra."], ["Apresentação da obra.", "Resumo ou contextualização.", "Análise crítica com argumentos.", "Conclusão e avaliação geral."], ["Resenha crítica de um filme sobre tecnologia.", "Resenha crítica de um livro juvenil."], ["Apenas resumir a obra.", "Dar nota sem justificar a avaliação.", "Contar toda a história e ignorar a análise."]], "Crônica": ["Texto geralmente curto que parte de uma situação cotidiana para narrar, observar ou refletir sobre aspectos da vida.", "Entreter, provocar reflexão ou apresentar um olhar particular sobre situações do cotidiano.", "Jornais, revistas, blogs, livros e espaços literários.", ["Parte de situações do cotidiano.", "Geralmente é breve.", "Pode misturar narrativa e reflexão.", "Apresenta um olhar pessoal sobre a situação.", "Pode usar humor, ironia ou sensibilidade.", "Usa linguagem adequada ao efeito pretendido."], ["Apresentação da situação cotidiana.", "Desenvolvimento do acontecimento ou observação.", "Desfecho, reflexão ou efeito final."], ["Uma situação inesperada na escola.", "Um dia sem celular."], ["Transformar a crônica em notícia.", "Não apresentar uma situação concreta.", "Explicar tudo e deixar pouco espaço para o efeito literário."]], "Fábula": ["Narrativa curta, frequentemente com animais ou seres personificados, que apresenta uma situação e costuma trazer uma moral ou ensinamento.", "Entreter e transmitir uma reflexão ou ensinamento.", "Literatura, livros infantis e atividades escolares.", ["É geralmente curta.", "Pode apresentar animais com características humanas.", "Tem conflito ou problema central.", "Possui sequência narrativa.", "Apresenta uma reflexão ou ensinamento.", "Pode terminar com uma moral explícita ou implícita."], ["Situação inicial.", "Conflito ou problema.", "Desenvolvimento e resolução.", "Moral ou ensinamento."], ["A disputa entre dois animais.", "A pressa e suas consequências."], ["Esquecer o conflito.", "Não deixar nenhum ensinamento perceptível.", "Criar personagens sem função na narrativa."]], "Biografia": ["Texto que apresenta a trajetória de vida de uma pessoa, destacando acontecimentos, experiências, realizações e contexto.", "Informar sobre a vida e a contribuição de uma pessoa.", "Livros, jornais, revistas, sites, trabalhos escolares e materiais históricos.", ["Apresenta informações sobre uma pessoa real.", "Organiza acontecimentos da trajetória de vida.", "Pode destacar formação, experiências e realizações.", "Considera o contexto histórico e social.", "Busca informações verificáveis.", "Mantém organização temporal ou temática."], ["Apresentação da pessoa.", "Infância, formação e contexto.", "Principais acontecimentos e realizações.", "Legado ou importância."], ["Biografia de uma personalidade brasileira.", "Biografia de um cientista que mudou sua área."], ["Inventar fatos.", "Listar datas sem explicar sua importância.", "Ignorar o contexto da trajetória."]], "Notícia": ["Texto jornalístico que informa sobre um fato ou acontecimento de interesse público de maneira clara e objetiva.", "Informar o público sobre acontecimentos relevantes.", "Jornais, revistas, televisão, rádio e portais de notícias.", ["Apresenta um fato ou acontecimento.", "Prioriza informações relevantes.", "Busca clareza e objetividade.", "Responde, quando pertinente, a quem, o quê, quando, onde, como e por quê.", "Pode apresentar fontes e dados.", "Organiza as informações pela relevância jornalística."], ["Título.", "Lide: informações essenciais do fato.", "Desenvolvimento com detalhes e fontes.", "Informações complementares."], ["Projeto ambiental desenvolvido por estudantes.", "Feira de ciências realizada em uma escola."], ["Misturar opinião com o fato.", "Inventar fontes ou dados.", "Esconder as informações principais."]], "Reportagem": ["Texto jornalístico mais aprofundado que investiga, contextualiza e desenvolve informações sobre um tema ou acontecimento.", "Informar e aprofundar a compreensão do leitor sobre um assunto.", "Jornais, revistas, portais, televisão, rádio e produções jornalísticas especiais.", ["Aprofunda um tema.", "Apresenta contexto e explicações.", "Pode reunir diferentes fontes.", "Pode incluir dados, entrevistas e relatos.", "Desenvolve diferentes aspectos do assunto.", "Busca oferecer uma visão mais ampla do tema."], ["Título e apresentação do tema.", "Contextualização.", "Desenvolvimento com dados, fontes e relatos.", "Análise dos diferentes aspectos.", "Fechamento com síntese ou novas informações."], ["Impactos das redes sociais entre jovens.", "Crise climática e cidades."], ["Confundir reportagem com notícia curta.", "Usar apenas uma fonte quando o tema pede diferentes perspectivas.", "Acumular informações sem organização."]], "Carta de reclamação": ["Texto em que uma pessoa ou grupo apresenta uma reclamação a uma instituição, empresa ou responsável, explicando o problema e solicitando uma solução.", "Registrar uma insatisfação de maneira clara e buscar providências.", "Empresas, órgãos públicos, escolas, serviços e instituições.", ["Identifica o destinatário.", "Apresenta claramente o problema.", "Fornece informações que ajudam a compreender a situação.", "Usa argumentos e fatos para sustentar a reclamação.", "Mantém linguagem respeitosa e adequada.", "Apresenta uma solicitação ou solução esperada."], ["Local e data, quando necessários.", "Destinatário e saudação.", "Descrição do problema e argumentos.", "Pedido de solução.", "Despedida e identificação."], ["Reclamação sobre problemas na infraestrutura de uma escola.", "Reclamação sobre problemas no transporte coletivo."], ["Usar ofensas ou agressividade.", "Não explicar qual é o problema.", "Não apresentar o que se espera como solução."]]};
+function renderStudy(){
+ const g=document.getElementById('studyGenres'); if(!g)return;
+ g.innerHTML=Object.keys(studyData).map((name,i)=>`<button class="study-chip${i===0?' active':''}" onclick="showStudy('${name.replace("'","\\'")}',this)">${name}<small>6 características · 2 textos-modelo</small></button>`).join('');
+ showStudy(Object.keys(studyData)[0],g.children[0]);
+}
+function showStudy(name,btn){
+ document.querySelectorAll('.study-chip').forEach(x=>x.classList.remove('active')); if(btn)btn.classList.add('active');
+ const d=studyData[name],c=document.getElementById('studyContent');
+ c.innerHTML=`<div class="study-panel"><span class="badge">GUIA DO GÊNERO</span><h2>${name}</h2><p>${d[0]}</p>
+ <div class="study-meta"><div class="study-box"><b>🎯 Para que serve?</b><p>${d[1]}</p></div><div class="study-box"><b>📍 Onde aparece?</b><p>${d[2]}</p></div></div>
+ <h3>⭐ 6 características principais</h3><ol class="study-list">${d[3].map(x=>`<li>${x}</li>`).join('')}</ol>
+ <h3>🧩 Como construir</h3><ol class="study-list">${d[4].map(x=>`<li>${x}</li>`).join('')}</ol>
+ <h3>✍️ 2 exemplos de textos</h3><div class="study-examples">${modelExamples[name].map((x,i)=>`<div class="example"><b>Exemplo ${i+1} — ${x[0]}</b><p>${x[1].replace(/\n/g,"<br>")}</p></div>`).join("")}</div>
+ <h3>⚠️ Erros comuns</h3><ul class="study-list">${d[6].map(x=>`<li>${x}</li>`).join('')}</ul>
+ <div class="challenge"><b>🧠 Desafio rápido</b><p>O que ajuda mais a produzir um bom texto desse gênero?</p><button class="primary" onclick="challenge(this,true)">Adaptar estrutura e linguagem ao objetivo do gênero</button> <button class="secondary" onclick="challenge(this,false)">Ignorar as características do gênero</button><div class="challenge-result"></div></div>
+ <div class="study-actions"><button class="primary" onclick="practiceGenre('${name.replace("'","\\'")}')">✍️ Praticar este gênero</button></div></div>`;
+}
+function challenge(btn,ok){btn.parentElement.querySelector('.challenge-result').textContent=ok?'✅ Correto! O gênero orienta o objetivo, a estrutura e a linguagem.':'💡 Tente novamente: conhecer o gênero ajuda a planejar melhor o texto.'}
+function practiceGenre(name){setGenre(name);go('escrever');}
+
+const data={
+'Artigo de opinião':['Texto argumentativo em que o autor apresenta uma posição e a sustenta com argumentos.',['Desafios para a sustentabilidade no Brasil','O impacto das redes sociais na vida dos jovens','Os desafios da educação no século XXI','Tecnologia e relações humanas','A importância da leitura na formação dos jovens']],
+'Editorial':['Texto de opinião que representa a posição de um veículo ou instituição.',['Tecnologia na educação','Mobilidade urbana','Desafios ambientais nas cidades','Educação midiática','Participação dos jovens na sociedade']],
+'Manifesto':['Texto público que apresenta princípios, ideias ou reivindicações de um grupo.',['Por uma escola mais inclusiva','Juventude e participação social','Defesa do meio ambiente','Combate ao bullying','Acesso democrático à cultura']],
+'Resumo':['Texto conciso que apresenta as ideias essenciais de um texto-base, sem opinião pessoal.',['Mudanças climáticas','Educação e transformação social','Tecnologia e sociedade','Saúde pública','Desigualdade social']],
+'Resenha crítica':['Texto que combina síntese de uma obra com análise e avaliação crítica.',['Filme sobre tecnologia','Livro juvenil','Documentário ambiental','Série sobre educação','Obra sobre desigualdade social']],
+'Crônica':['Texto breve que parte do cotidiano para construir narrativa ou reflexão.',['Uma situação inesperada na escola','Um dia sem celular','A fila da cantina','Uma viagem de ônibus','O primeiro dia de aula']],
+'Fábula':['Narrativa curta, muitas vezes com animais personificados, que apresenta uma moral.',['A disputa entre dois animais','O valor da cooperação','A importância da honestidade','A pressa e suas consequências','O poder da amizade']],
+'Biografia':['Texto que apresenta a trajetória de vida de uma pessoa.',['Personalidade brasileira','Cientista que mudou sua área','Artista de destaque','Líder comunitário','Jovem empreendedor']],
+'Notícia':['Texto jornalístico objetivo que apresenta um acontecimento relevante.',['Projeto ambiental de estudantes','Feira de ciências da escola','Campanha de arrecadação','Novo projeto cultural','Evento esportivo escolar']],
+'Reportagem':['Texto jornalístico aprofundado que contextualiza um assunto.',['Impactos das redes sociais entre jovens','Desafios da mobilidade urbana','Crise climática e cidades','Hábitos de leitura dos jovens','Tecnologia e mercado de trabalho']],
+'Carta de reclamação':['Texto dirigido a pessoa ou instituição para apresentar problema e solicitar solução.',['Problemas na infraestrutura de uma escola','Serviço público com atendimento inadequado','Problemas no transporte coletivo','Atendimento ruim em um serviço','Problemas na coleta de lixo']]
+};
+let genre='Artigo de opinião',topic=data[genre][1][0];
+const genres=document.getElementById('genres');
+Object.keys(data).forEach(g=>{let b=document.createElement('button');b.className='chip'+(g===genre?' active':'');b.textContent=g;b.onclick=()=>setGenre(g);genres.appendChild(b)});
+function setGenre(g){genre=g;topic=data[g][1][0];[...genres.children].forEach(b=>b.classList.toggle('active',b.textContent===g));document.getElementById('genreInfo').innerHTML='<h2>💡 '+g+'</h2><p class="sub">'+data[g][0]+'</p><p><b>Temas disponíveis:</b> 5 sugestões principais + tema próprio.</p>';renderTopics();updateSelected()}
+function renderTopics(){document.getElementById('topics').innerHTML=data[genre][1].map(t=>'<button class="topic" onclick="setTopic('+JSON.stringify(t)+')"><span class="icon">📝</span><span><h3>'+t+'</h3><p>Tema de prática para '+genre+'.</p></span><span class="arrow">›</span></button>').join('')}
+function setTopic(t){topic=t;updateSelected();go('editor')}
+function customTopic(){let t=prompt('Digite o tema que você quer escrever:');if(t&&t.trim()){topic=t.trim();updateSelected();go('editor')}}
+function draftMode(){document.getElementById('draftGenre').textContent=genre;document.getElementById('draftTopic').value='';go('draft')}
+function startDraft(){let t=document.getElementById('draftTopic').value.trim();if(!t)return alert('Digite o tema antes de continuar.');topic=t;updateSelected();go('editor')}
+function updateSelected(){document.getElementById('selected').textContent=genre+' · '+topic;document.getElementById('editorHint').textContent=data[genre][0]}
+function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x.id===p));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x.dataset.p===p));scrollTo(0,0);if(p==='editor')updateSelected()}
+const ta=document.getElementById('text');ta.addEventListener('input',()=>document.getElementById('count').textContent=(ta.value.trim()?ta.value.trim().split(/\s+/).length:0)+' palavras');
+function save(){localStorage.setItem('redaplusDraft',ta.value);alert('Rascunho salvo!')}
+function send(){if(!ta.value.trim())return alert('Escreva seu texto antes de enviar.');go('resultado')}
+function previewPhoto(e){const file=e.target.files[0];if(!file)return;const img=document.getElementById('photoPreview');img.src=URL.createObjectURL(file);img.style.display='block';document.getElementById('photoName').textContent=file.name;document.getElementById('analyzeBtn').style.display='inline-block';document.getElementById('photoResult').style.display='none'}
+function analyzePhoto(){document.getElementById('photoResult').style.display='block';document.getElementById('photoResult').scrollIntoView({behavior:'smooth'})}
+setGenre(genre);renderStudy();
+
+/* ===== Reda+ v5: conta local e perfil ===== */
+function getUsers(){
+  try{return JSON.parse(localStorage.getItem('redaplus_users')||'[]')}catch(e){return []}
+}
+function saveUsers(users){localStorage.setItem('redaplus_users',JSON.stringify(users))}
+function currentUser(){try{return JSON.parse(localStorage.getItem('redaplus_current_user')||'null')}catch(e){return null}}
+function setCurrentUser(user){localStorage.setItem('redaplus_current_user',JSON.stringify(user))}
+function initials(name){
+  return (name||'U').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase() || 'U';
+}
+function showAuth(mode){
+  const login=mode==='login';
+  document.getElementById('loginForm').style.display=login?'block':'none';
+  document.getElementById('signupForm').style.display=login?'none':'block';
+  document.getElementById('tabLogin').classList.toggle('active',login);
+  document.getElementById('tabSignup').classList.toggle('active',!login);
+  document.getElementById('loginError').style.display='none';
+  document.getElementById('signupError').style.display='none';
+}
+function authError(id,msg){
+  const el=document.getElementById(id); el.textContent=msg; el.style.display='block';
+}
+function signupUser(e){
+  e.preventDefault();
+  const name=document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim().toLowerCase();
+  const password=document.getElementById('signupPassword').value;
+  const confirm=document.getElementById('signupConfirm').value;
+  if(password!==confirm){authError('signupError','As senhas não coincidem.');return;}
+  const users=getUsers();
+  if(users.some(u=>u.email===email)){authError('signupError','Este e-mail já está cadastrado. Entre na sua conta.');return;}
+  const user={id:Date.now().toString(),name,email,password,createdAt:new Date().toISOString()};
+  users.push(user); saveUsers(users); setCurrentUser(user);
+  enterApp();
+}
+function loginUser(e){
+  e.preventDefault();
+  const email=document.getElementById('loginEmail').value.trim().toLowerCase();
+  const password=document.getElementById('loginPassword').value;
+  const user=getUsers().find(u=>u.email===email && u.password===password);
+  if(!user){authError('loginError','E-mail ou senha incorretos.');return;}
+  setCurrentUser(user); enterApp();
+}
+function demoGoogle(){
+  const email='demo@redaplus.app';
+  let users=getUsers();
+  let user=users.find(u=>u.email===email);
+  if(!user){user={id:'demo',name:'Aluno Reda+',email,createdAt:new Date().toISOString()};users.push(user);saveUsers(users);}
+  setCurrentUser(user); enterApp();
+}
+function enterApp(){
+  document.getElementById('authOverlay').style.display='none';
+  updateProfileUI();
+  if(typeof goToPage==='function') goToPage('home');
+}
+function logoutUser(){
+  localStorage.removeItem('redaplus_current_user');
+  document.getElementById('profilePage').style.display='none';
+  document.getElementById('authOverlay').style.display='flex';
+  showAuth('login');
+}
+function updateProfileUI(){
+  const u=currentUser(); if(!u)return;
+  const name=u.name||'Usuário';
+  const email=u.email||'';
+  document.getElementById('profileName').textContent=name;
+  document.getElementById('profileEmail').textContent=email;
+  document.getElementById('profileAvatar').textContent=initials(name);
+  // Estatísticas simples da versão protótipo.
+  const saved=JSON.parse(localStorage.getItem('redaplus_history')||'[]');
+  document.getElementById('statTexts').textContent=saved.length||0;
+  const genres=[...new Set(saved.map(x=>x.genre).filter(Boolean))];
+  document.getElementById('statGenres').textContent=genres.length+'/11';
+  const scores=saved.map(x=>Number(x.score)).filter(x=>!isNaN(x));
+  document.getElementById('statAverage').textContent=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):'—';
+  document.getElementById('statDays').textContent=localStorage.getItem('redaplus_study_days')||0;
+}
+function openProfile(){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.getElementById('profilePage').style.display='block';
+  updateProfileUI();
+}
+function editProfile(){
+  const u=currentUser(); if(!u)return;
+  const name=prompt('Qual nome você quer usar no Reda+?',u.name||'');
+  if(name===null)return;
+  const clean=name.trim();
+  if(!clean)return;
+  u.name=clean;
+  const users=getUsers(); const i=users.findIndex(x=>x.id===u.id);
+  if(i>=0){users[i]=u;saveUsers(users);}
+  setCurrentUser(u); updateProfileUI();
+}
+(function initAuth(){
+  const u=currentUser();
+  if(u){
+    document.getElementById('authOverlay').style.display='none';
+    setTimeout(updateProfileUI,0);
+  }else{
+    document.getElementById('authOverlay').style.display='flex';
+  }
+})();
+
+</script>
+
+<!-- Perfil -->
+<section id="profilePage" class="page" style="display:none">
+  <div class="profile-page">
+    <div class="profile-hero">
+      <div id="profileAvatar" class="profile-avatar">U</div>
+      <h2 id="profileName">Usuário</h2>
+      <p id="profileEmail">email@exemplo.com</p>
+    </div>
+
+    <h3 class="profile-section-title">Seu progresso</h3>
+    <div class="profile-grid">
+      <div class="profile-stat"><strong id="statTexts">0</strong><span>textos produzidos</span></div>
+      <div class="profile-stat"><strong id="statGenres">0/11</strong><span>gêneros praticados</span></div>
+      <div class="profile-stat"><strong id="statAverage">—</strong><span>média das correções</span></div>
+      <div class="profile-stat"><strong id="statDays">0</strong><span>dias estudando</span></div>
+    </div>
+
+    <div class="plan-card" id="planCard"><span id="planBadge" class="plan-badge">PLANO GRATUITO</span><h3 id="planTitle" style="margin:10px 0 4px">Reda+ Gratuito</h3><p id="planDescription" style="color:#667085;margin-top:0">Estude e produza uma redação por dia.</p><div class="usage-row"><span>✍️ Redações hoje</span><span id="essayUsageText">0/1</span></div><div class="usage-bar"><div id="essayUsageFill" class="usage-fill"></div></div><div class="usage-row"><span>📚 Gêneros estudados hoje</span><span id="genreUsageText">0/1</span></div><div class="usage-bar"><div id="genreUsageFill" class="usage-fill"></div></div><button id="plusButton" class="plus-btn" onclick="activatePlusDemo()">💎 Ativar Reda+ Plus (demonstração)</button><div class="plan-note">O Plus é simulado localmente nesta versão. Pagamentos reais serão conectados depois.</div></div>
+<h3 class="profile-section-title">Minha conta</h3>
+    <div class="profile-menu">
+      <button onclick="editProfile()">👤 Editar perfil</button>
+      <button onclick="alert('As suas redações ficarão disponíveis aqui na próxima etapa.')">📚 Minhas redações</button>
+      <button onclick="goToPage('progress')">📈 Meu progresso</button>
+      <button onclick="alert('As conquistas serão liberadas conforme você pratica no Reda+.')">🏆 Conquistas</button>
+      <button onclick="alert('Configurações de conta serão adicionadas em uma próxima versão.')">⚙️ Configurações</button>
+      <button class="danger" onclick="logoutUser()">🚪 Sair da conta</button>
+    </div>
+  </div>
+</section>
+
+
+<script>
+let deferredInstallPrompt=null;
+function dayKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function getUsage(){const u=currentUser();if(!u)return{date:dayKey(),essays:0,genres:[]};const k="redaplus_usage_"+u.id;try{const x=JSON.parse(localStorage.getItem(k)||"null");return(!x||x.date!==dayKey())?{date:dayKey(),essays:0,genres:[]}:x}catch(e){return{date:dayKey(),essays:0,genres:[]}}}
+function saveUsage(x){const u=currentUser();if(u)localStorage.setItem("redaplus_usage_"+u.id,JSON.stringify(x))}
+function isPlus(){const u=currentUser();return !!(u&&u.plan==="plus")}
+function canWriteToday(){return isPlus()||getUsage().essays<1}
+function registerWriting(){if(isPlus())return true;const u=getUsage();if(u.essays>=1){showLimit("write");return false}u.essays++;saveUsage(u);updateProfileUI();return true}
+function registerGenreStudy(g){if(isPlus())return true;const u=getUsage();if(u.genres.length>=1&&!u.genres.includes(g)){showLimit("genre");return false}if(!u.genres.includes(g))u.genres.push(g);saveUsage(u);updateProfileUI();return true}
+function showLimit(k){document.getElementById("limitMessage").textContent=k==="write"?"Na conta gratuita, o limite é de 1 redação por dia. No Plus, você poderá produzir sem esse limite.":"Na conta gratuita, você pode estudar 1 gênero por dia. No Plus, poderá estudar todos os gêneros sem esse limite.";document.getElementById("limitModal").style.display="flex"}
+function closeLimitModal(){document.getElementById("limitModal").style.display="none"}
+function activatePlusDemo(){closeLimitModal();const u=currentUser();if(!u)return;u.plan="plus";const a=getUsers(),i=a.findIndex(x=>x.id===u.id);if(i>=0){a[i]=u;saveUsers(a)}setCurrentUser(u);updateProfileUI();alert("💎 Reda+ Plus ativado em modo de demonstração neste navegador.")}
+const oldUpdateProfileUI=updateProfileUI;updateProfileUI=function(){oldUpdateProfileUI();const b=document.getElementById("planBadge");if(!b)return;const p=isPlus(),u=getUsage();document.getElementById("planCard").classList.toggle("plus",p);b.textContent=p?"💎 REDA+ PLUS":"PLANO GRATUITO";b.className=p?"plan-badge plus":"plan-badge";document.getElementById("planTitle").textContent=p?"Reda+ Plus":"Reda+ Gratuito";document.getElementById("planDescription").textContent=p?"Estude e produza textos sem limite diário.":"Estude e produza uma redação por dia.";document.getElementById("essayUsageText").textContent=p?"∞":u.essays+"/1";document.getElementById("genreUsageText").textContent=p?"∞":u.genres.length+"/1";document.getElementById("essayUsageFill").style.width=p?"100%":(u.essays*100)+"%";document.getElementById("genreUsageFill").style.width=p?"100%":(u.genres.length*100)+"%";const bt=document.getElementById("plusButton");bt.textContent=p?"💎 Plus ativo":"💎 Ativar Reda+ Plus (demonstração)";bt.disabled=p});
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstallPrompt=e;const b=document.getElementById("installBanner");if(b&&!localStorage.getItem("redaplus_install_dismissed"))b.style.display="flex"});
+async function installPWA(){if(!deferredInstallPrompt){alert("Use o menu do navegador e escolha 'Adicionar à tela inicial'.");return}deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;closeInstallBanner()}
+function closeInstallBanner(){const b=document.getElementById("installBanner");if(b)b.style.display="none";localStorage.setItem("redaplus_install_dismissed","1")}
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{}));
+document.addEventListener("click",function(e){const el=e.target.closest("button,a,.card,.topic-card");if(!el||!currentUser())return;const t=(el.innerText||"").toLowerCase();if(t.includes("praticar")||t.includes("produzir")||t.includes("escrever agora")){if(!canWriteToday()){e.preventDefault();e.stopPropagation();showLimit("write");return}setTimeout(registerWriting,0)}});
+</script>
+</body></html>
