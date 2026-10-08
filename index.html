@@ -315,7 +315,7 @@ function updateSelected(){document.getElementById('selected').textContent=genre+
 function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x.id===p));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on',x.dataset.p===p));scrollTo(0,0);if(p==='editor')updateSelected()}
 const ta=document.getElementById('text');ta.addEventListener('input',()=>document.getElementById('count').textContent=(ta.value.trim()?ta.value.trim().split(/\s+/).length:0)+' palavras');
 function save(){localStorage.setItem('redaplusDraft',ta.value);alert('Rascunho salvo!')}
-function send(){if(!ta.value.trim())return alert('Escreva seu texto antes de enviar.');go('resultado')}
+function send(){if(!ta.value.trim())return alert('Escreva seu texto antes de finalizar.');const words=ta.value.trim().split(/\s+/).length;let score=500;if(words>=100)score+=80;if(words>=200)score+=80;if(words>=300)score+=80;if(words>=400)score+=80;if(words>=500)score+=80;if(score>900)score=900;document.querySelector('.score').innerHTML=score+' <span style="font-size:18px;color:#62779a">/1000</span>';go('resultado')}
 function previewPhoto(e){const file=e.target.files[0];if(!file)return;const img=document.getElementById('photoPreview');img.src=URL.createObjectURL(file);img.style.display='block';document.getElementById('photoName').textContent=file.name;document.getElementById('analyzeBtn').style.display='inline-block';document.getElementById('photoResult').style.display='none'}
 function analyzePhoto(){document.getElementById('photoResult').style.display='block';document.getElementById('photoResult').scrollIntoView({behavior:'smooth'})}
 setGenre(genre);renderStudy();
