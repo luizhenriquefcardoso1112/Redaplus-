@@ -306,7 +306,7 @@ let genre='Artigo de opinião',topic=data[genre][1][0];
 const genres=document.getElementById('genres');
 Object.keys(data).forEach(g=>{let b=document.createElement('button');b.className='chip'+(g===genre?' active':'');b.textContent=g;b.onclick=()=>setGenre(g);genres.appendChild(b)});
 function setGenre(g){genre=g;topic=data[g][1][0];[...genres.children].forEach(b=>b.classList.toggle('active',b.textContent===g));document.getElementById('genreInfo').innerHTML='<h2>💡 '+g+'</h2><p class="sub">'+data[g][0]+'</p><p><b>Temas disponíveis:</b> 5 sugestões principais + tema próprio.</p>';renderTopics();updateSelected()}
-function renderTopics(){document.getElementById('topics').innerHTML=data[genre][1].map(t=>'<button class="topic" onclick="setTopic('+JSON.stringify(t)+')"><span class="icon">📝</span><span><h3>'+t+'</h3><p>Tema de prática para '+genre+'.</p></span><span class="arrow">›</span></button>').join('')}
+function renderTopics(){document.getElementById('topics').innerHTML=data[genre][1].map(t=>'<button class="topic" onclick="setTopic('+JSON.stringify(t)+')"><span class="icon">📝</span><span><h3>'+t+'</h3><p>Tema de prática para '+genre+'.</p></span><span class="arrow">›</span></button>').join('')
 function setTopic(t){topic=t;updateSelected();go('editor')}
 function customTopic(){let t=prompt('Digite o tema que você quer escrever:');if(t&&t.trim()){topic=t.trim();updateSelected();go('editor')}}
 function draftMode(){document.getElementById('draftGenre').textContent=genre;document.getElementById('draftTopic').value='';go('draft')}
